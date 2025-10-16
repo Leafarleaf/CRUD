@@ -51,7 +51,6 @@ class Viagens extends BaseController
         ]);
     }
 
-
     public function store()
     {
         $viagemModel = new Viagem();
