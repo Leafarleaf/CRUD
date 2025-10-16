@@ -29,8 +29,10 @@
         </div>
     </nav>
 </body>
+<div class="mb-4 text-center">
+    <h2>Finalizar Viagem</h2>
+</div>
 
-<h2>Finalizar Viagem</h2>
 
 <form action="<?= base_url('viagens/update/' . $viagem['id']) ?>" method="post">
     <?= csrf_field() ?>
