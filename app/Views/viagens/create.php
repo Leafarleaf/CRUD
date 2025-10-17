@@ -21,35 +21,34 @@
 </body>
 
 <div class="container mt-4">
-    <h2>Nova Viagem</h2>
+  <h2>Nova Viagem</h2>
 
-    <form action="<?= base_url('viagens/store') ?>" method="post">
-        <?= csrf_field() ?>
+  <form action="<?= base_url('viagens/store') ?>" method="post">
+    <?= csrf_field() ?>
 
-        <label>Motorista</label>
-        <select name="motorista_cnh" class="form-control mb-2" required>
-            <option value="">Selecione...</option>
-            <?php foreach ($motoristas as $m): ?>
-                <option value="<?= esc($m['cnh']) ?>">
-                    <?= esc($m['nome']) ?> (<?= esc($m['cnh']) ?>)
-                </option>
-            <?php endforeach; ?>
-        </select>
+    <label>Motoristas</label>
+    <select name="motoristas[]" class="form-control mb-2" multiple required>
+      <?php foreach ($motoristas as $m): ?>
+        <option value="<?= esc($m['cnh']) ?>">
+          <?= esc($m['nome']) ?> (<?= esc($m['cnh']) ?>)
+        </option>
+      <?php endforeach; ?>
+    </select>
 
-        <label>Veículo</label>
-        <select name="veiculo_id" class="form-control mb-2" required>
-            <option value="">Selecione...</option>
-            <?php foreach ($veiculos as $v): ?>
-                <option value="<?= esc($v['id']) ?>">
-                    <?= esc($v['modelo']) ?> - <?= esc($v['placa']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
+    <label>Veículo</label>
+    <select name="veiculo_id" class="form-control mb-2" required>
+      <option value="">Selecione...</option>
+      <?php foreach ($veiculos as $v): ?>
+        <option value="<?= esc($v['id']) ?>">
+          <?= esc($v['modelo']) ?> - <?= esc($v['placa']) ?>
+        </option>
+      <?php endforeach; ?>
+    </select>
 
-        <input type="number" name="km_inicio" class="form-control mb-2" placeholder="KM Inicial" required>
-        <input type="datetime-local" name="data_inicio" class="form-control mb-2" required>
+    <input type="number" name="km_inicio" class="form-control mb-2" placeholder="KM Inicial" required>
+    <input type="datetime-local" name="data_inicio" class="form-control mb-2" required>
 
-        <button type="submit" class="btn btn-success">Iniciar Viagem</button>
-        <a href="<?= base_url('/') ?>" class="btn btn-danger">Cancelar</a>
-    </form>
+    <button type="submit" class="btn btn-success">Iniciar Viagem</button>
+    <a href="<?= base_url('viagens') ?>" class="btn btn-danger">Voltar</a>
+  </form>
 </div>

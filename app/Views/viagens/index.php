@@ -27,8 +27,8 @@
     </nav>
 
     <div class="container col-md-8 mx-auto text-center">
-        <h2 class="mb-4 text-center">Lista de Viagens</h2>
-        <a href="<?= base_url('viagens/create') ?>" class="btn btn-primary text-center">Nova Viagem</a>
+        <h2 class="text-center">Lista de Viagens</h2>
+        <a href="<?= base_url('viagens/create') ?>" class="mb-4  btn btn-success text-center">Nova Viagem</a>
     </div>
 
     <table class="table table-striped table-hover">
@@ -70,7 +70,42 @@
         </tbody>
     </table>
 
-
     <div class="container col-md-8 mx-auto text-center">
-        <h2 class="mb-4 text-center">Viagens Finalizadas</h2>
+        <h2 class="text-center">Lista de Viagens Finalizadas</h2>
     </div>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Motorista (CNH)</th>
+                <th>Veículo (ID)</th>
+                <th>Modelo</th>
+                <th>Placa</th>
+                <th>KM Início</th>
+                <th>KM Fim</th>
+                <th>Data Início</th>
+                <th>Data Fim</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (!empty($viagensFinalizadas) && is_array($viagensFinalizadas)): ?>
+                <?php foreach ($viagensFinalizadas as $viagem): ?>
+                    <tr>
+                        <td><?= esc($viagem['id']) ?></td>
+                        <td><?= esc($viagem['motorista_cnh']) ?></td>
+                        <td><?= esc($viagem['veiculo_id']) ?></td>
+                        <td><?= esc($viagem['modelo']) ?></td>
+                        <td><?= esc($viagem['placa']) ?></td>
+                        <td><?= esc($viagem['km_inicio']) ?></td>
+                        <td><?= esc($viagem['km_fim']) ?></td>
+                        <td><?= esc($viagem['data_inicio']) ?></td>
+                        <td><?= esc($viagem['data_fim']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+                    <td colspan="9" class="text-center">Nenhuma viagem finalizada encontrada.</td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>

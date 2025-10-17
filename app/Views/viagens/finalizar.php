@@ -29,24 +29,36 @@
         </div>
     </nav>
 </body>
-<div class="mb-4 text-center">
+<div class="container col-md-8 mx-auto text-center">
     <h2>Finalizar Viagem</h2>
+
+    <form action="<?= base_url('viagens/update/' . $viagem['id']) ?>" method="post">
+        <?= csrf_field() ?>
+
+        <div class="form-group mb-2">
+            <label for="km_fim">KM Final</label>
+            <input type="number" name="km_fim" class="form-control" required>
+        </div>
+
+        <div class="form-group mb-2">
+            <label for="data_fim">Data de Chegada</label>
+            <input type="datetime-local" name="data_fim" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Finalizar</button>
+        <a href="<?= base_url('viagens') ?>" class="btn btn-danger">Cancelar</a>
+
+        <?php if (session()->getFlashdata('error')): ?>
+            <div class="alert alert-danger">
+                <?= session()->getFlashdata('error') ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (session()->getFlashdata('success')): ?>
+            <div class="alert alert-success">
+                <?= session()->getFlashdata('success') ?>
+            </div>
+        <?php endif; ?>
+
+    </form>
 </div>
-
-
-<form action="<?= base_url('viagens/update/' . $viagem['id']) ?>" method="post">
-    <?= csrf_field() ?>
-
-    <div class="form-group mb-2">
-        <label for="km_fim">KM Final</label>
-        <input type="number" name="km_fim" class="form-control" required>
-    </div>
-
-    <div class="form-group mb-2">
-        <label for="data_fim">Data de Chegada</label>
-        <input type="datetime-local" name="data_fim" class="form-control" required>
-    </div>
-
-    <button type="submit" class="btn btn-success">Finalizar</button>
-    <a href="<?= base_url('viagens') ?>" class="btn btn-danger">Cancelar</a>
-</form>
