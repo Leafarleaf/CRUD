@@ -42,6 +42,7 @@ class Viagens extends BaseController
             $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
 
             $motoristas = $motoristaViagemModel
+                ->distinct()
                 ->from('viagem_motoristas vm')
                 ->select('vm.motorista_cnh, motoristas.nome')
                 ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')
@@ -58,6 +59,7 @@ class Viagens extends BaseController
             $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
 
             $motoristas = $motoristaViagemModel
+                ->distinct()
                 ->from('viagem_motoristas vm')
                 ->select('vm.motorista_cnh, motoristas.nome')
                 ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')

@@ -10,12 +10,12 @@ class Viagem extends Model
     protected $table = 'viagens';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'motorista_cnh',
         'veiculo_id',
         'km_inicio',
         'km_fim',
         'data_inicio',
         'data_fim',
+        'finalizada',
     ];
     protected $useTimestamps = false;
 }
