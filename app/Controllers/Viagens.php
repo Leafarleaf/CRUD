@@ -26,47 +26,40 @@ class Viagens extends BaseController
         $veiculoModel = new Veiculo();
         $motoristaViagemModel = new MotoristaViagem();
 
-        // Buscar viagens NÃO finalizadas
         $viagens = $viagemModel->where('finalizada', false)->findAll();
 
-        // Resetar o model para nova consulta
-        $viagemModel = new Viagem();
-
-        // Buscar viagens FINALIZADAS
         $viagensFinalizadas = $viagemModel->where('finalizada', true)->findAll();
 
-        // Adiciona informações extras às viagens não finalizadas
+        $formatarMotoristas = function ($viagemId) use ($motoristaViagemModel) {
+            $motoristas = $motoristaViagemModel
+                ->distinct()
+                ->select('motoristas.nome, viagem_motoristas.motorista_cnh')
+                ->join('motoristas', 'motoristas.cnh = viagem_motoristas.motorista_cnh')
+                ->where('viagem_id', $viagemId)
+                ->findAll();
+
+            $motoristasFormatados = [];
+            foreach ($motoristas as $motorista) {
+                $motoristasFormatados[] = $motorista['nome'] . ' (' . $motorista['motorista_cnh'] . ')';
+            }
+
+            return $motoristasFormatados;
+        };
+
         foreach ($viagens as &$viagem) {
             $veiculo = $veiculoModel->find($viagem['veiculo_id']);
             $viagem['placa'] = $veiculo['placa'] ?? 'Indisponível';
             $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
 
-            $motoristas = $motoristaViagemModel
-                ->distinct()
-                ->from('viagem_motoristas vm')
-                ->select('vm.motorista_cnh, motoristas.nome')
-                ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')
-                ->where('vm.viagem_id', $viagem['id'])
-                ->findAll();
-
-            $viagem['motoristas'] = array_column($motoristas, 'nome');
+            $viagem['motoristas'] = $formatarMotoristas($viagem['id']);
         }
 
-        // Adiciona informações extras às viagens finalizadas
         foreach ($viagensFinalizadas as &$viagem) {
             $veiculo = $veiculoModel->find($viagem['veiculo_id']);
             $viagem['placa'] = $veiculo['placa'] ?? 'Indisponível';
             $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
 
-            $motoristas = $motoristaViagemModel
-                ->distinct()
-                ->from('viagem_motoristas vm')
-                ->select('vm.motorista_cnh, motoristas.nome')
-                ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')
-                ->where('vm.viagem_id', $viagem['id'])
-                ->findAll();
-
-            $viagem['motoristas'] = array_column($motoristas, 'nome');
+            $viagem['motoristas'] = $formatarMotoristas($viagem['id']);
         }
 
         return view('viagens/index', [
@@ -74,6 +67,7 @@ class Viagens extends BaseController
             'viagensFinalizadas' => $viagensFinalizadas,
         ]);
     }
+
 
     public function store()
     {
@@ -110,7 +104,7 @@ class Viagens extends BaseController
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
         }
 
         return view('viagens/finalizar', ['viagem' => $viagem]);
@@ -123,19 +117,18 @@ class Viagens extends BaseController
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
         }
 
         $kmFim = (int) $this->request->getPost('km_fim');
         $dataFim = $this->request->getPost('data_fim');
 
-        // Validação
         if ($kmFim < $viagem['km_inicio']) {
-            return redirect()->back()->withInput()->with('error', 'KM final não pode ser menor que o KM inicial.');
+            return redirect()->back()->withInput()->with('error', 'KM final nÃ£o pode ser menor que o KM inicial.');
         }
 
         if (strtotime($dataFim) < strtotime($viagem['data_inicio'])) {
-            return redirect()->back()->withInput()->with('error', 'Data de fim não pode ser anterior à data de início.');
+            return redirect()->back()->withInput()->with('error', 'Data de fim nÃ£o pode ser anterior Ã  data de inÃ­cio.');
         }
 
         $data = [
