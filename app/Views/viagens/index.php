@@ -35,7 +35,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Motorista (CNH)</th>
+                <th>Motorista(s) (CNH)</th>
                 <th>Veículo (ID)</th>
                 <th>Modelo</th>
                 <th>Placa</th>
@@ -50,7 +50,14 @@
                     <?php if (empty($viagem['km_fim'])): ?>
                         <tr>
                             <td><?= esc($viagem['id']) ?></td>
-                            <td><?= esc($viagem['motorista_cnh']) ?></td>
+                            <td>
+                                <?php if (!empty($viagem['motoristas'])): ?>
+                                    <?= esc(implode(', ', $viagem['motoristas'])) ?>
+                                <?php else: ?>
+                                    <span class="text-muted">Sem motoristas</span>
+                                <?php endif; ?>
+                            </td>
+
                             <td><?= esc($viagem['veiculo_id']) ?></td>
                             <td><?= esc($viagem['modelo']) ?></td>
                             <td><?= esc($viagem['placa']) ?></td>
@@ -77,7 +84,7 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Motorista (CNH)</th>
+                <th>Motorista(s) (CNH)</th>
                 <th>Veículo (ID)</th>
                 <th>Modelo</th>
                 <th>Placa</th>
@@ -92,7 +99,14 @@
                 <?php foreach ($viagensFinalizadas as $viagem): ?>
                     <tr>
                         <td><?= esc($viagem['id']) ?></td>
-                        <td><?= esc($viagem['motorista_cnh']) ?></td>
+                        <td>
+                            <?php if (!empty($viagem['motoristas'])): ?>
+                                <?= esc(implode(', ', $viagem['motoristas'])) ?>
+                            <?php else: ?>
+                                <span class="text-muted">Sem motoristas</span>
+                            <?php endif; ?>
+                        </td>
+
                         <td><?= esc($viagem['veiculo_id']) ?></td>
                         <td><?= esc($viagem['modelo']) ?></td>
                         <td><?= esc($viagem['placa']) ?></td>

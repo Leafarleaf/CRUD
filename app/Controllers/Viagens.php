@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Motorista;
 use App\Models\Veiculo;
+use App\Models\Viagem;
 use App\Models\MotoristaViagem;
 
 class Viagens extends BaseController
@@ -21,29 +22,49 @@ class Viagens extends BaseController
 
     public function index()
     {
-        $viagemModel = new \App\Models\Viagem();
-        $veiculoModel = new \App\Models\Veiculo();
+        $viagemModel = new Viagem();
+        $veiculoModel = new Veiculo();
         $motoristaViagemModel = new MotoristaViagem();
 
+        // Buscar viagens NÃƒO finalizadas
         $viagens = $viagemModel->where('finalizada', false)->findAll();
+
+        // Resetar o model para nova consulta
+        $viagemModel = new Viagem();
+
+        // Buscar viagens FINALIZADAS
         $viagensFinalizadas = $viagemModel->where('finalizada', true)->findAll();
 
+        // Adiciona informaÃ§Ãµes extras Ã s viagens nÃ£o finalizadas
         foreach ($viagens as &$viagem) {
             $veiculo = $veiculoModel->find($viagem['veiculo_id']);
-            $viagem['placa'] = $veiculo['placa'] ?? 'Indisponível';
-            $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
+            $viagem['placa'] = $veiculo['placa'] ?? 'IndisponÃ­vel';
+            $viagem['modelo'] = $veiculo['modelo'] ?? 'IndisponÃ­vel';
 
-            $motoristas = $motoristaViagemModel->where('viagem_id', $viagem['id'])->findAll();
-            $viagem['motoristas'] = array_column($motoristas, 'motorista_cnh');
+            $motoristas = $motoristaViagemModel
+                ->from('viagem_motoristas vm')
+                ->select('vm.motorista_cnh, motoristas.nome')
+                ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')
+                ->where('vm.viagem_id', $viagem['id'])
+                ->findAll();
+
+            $viagem['motoristas'] = array_column($motoristas, 'nome');
         }
 
+        // Adiciona informaÃ§Ãµes extras Ã s viagens finalizadas
         foreach ($viagensFinalizadas as &$viagem) {
             $veiculo = $veiculoModel->find($viagem['veiculo_id']);
-            $viagem['placa'] = $veiculo['placa'] ?? 'Indisponível';
-            $viagem['modelo'] = $veiculo['modelo'] ?? 'Indisponível';
+            $viagem['placa'] = $veiculo['placa'] ?? 'IndisponÃ­vel';
+            $viagem['modelo'] = $veiculo['modelo'] ?? 'IndisponÃ­vel';
 
-            $motoristas = $motoristaViagemModel->where('viagem_id', $viagem['id'])->findAll();
-            $viagem['motoristas'] = array_column($motoristas, 'motorista_cnh');
+            $motoristas = $motoristaViagemModel
+                ->from('viagem_motoristas vm')
+                ->select('vm.motorista_cnh, motoristas.nome')
+                ->join('motoristas', 'motoristas.cnh = vm.motorista_cnh')
+                ->where('vm.viagem_id', $viagem['id'])
+                ->findAll();
+
+            $viagem['motoristas'] = array_column($motoristas, 'nome');
         }
 
         return view('viagens/index', [
@@ -52,10 +73,9 @@ class Viagens extends BaseController
         ]);
     }
 
-
     public function store()
     {
-        $viagemModel = new \App\Models\Viagem();
+        $viagemModel = new Viagem();
         $motoristaViagemModel = new MotoristaViagem();
 
         $data = [
@@ -79,16 +99,16 @@ class Viagens extends BaseController
             }
         }
 
-        return redirect()->to('/viagens')->with('success', 'Viagem criada com motoristas!');
+        return redirect()->to('/viagens')->with('success', 'Viagem criada com sucesso!');
     }
 
     public function edit($id)
     {
-        $viagemModel = new \App\Models\Viagem();
+        $viagemModel = new Viagem();
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
         }
 
         return view('viagens/finalizar', ['viagem' => $viagem]);
@@ -96,33 +116,30 @@ class Viagens extends BaseController
 
     public function update($id)
     {
-        $viagemModel = new \App\Models\Viagem();
+        $viagemModel = new Viagem();
 
-        // Obtemos os dados existentes da viagem
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
         }
 
-        // Novos dados do formulário
         $kmFim = (int) $this->request->getPost('km_fim');
         $dataFim = $this->request->getPost('data_fim');
 
-        // Validações
+        // ValidaÃ§Ã£o
         if ($kmFim < $viagem['km_inicio']) {
-            return redirect()->back()->withInput()->with('error', 'KM final não pode ser menor que o KM inicial.');
+            return redirect()->back()->withInput()->with('error', 'KM final nÃ£o pode ser menor que o KM inicial.');
         }
 
         if (strtotime($dataFim) < strtotime($viagem['data_inicio'])) {
-            return redirect()->back()->withInput()->with('error', 'Data de fim não pode ser anterior à data de início.');
+            return redirect()->back()->withInput()->with('error', 'Data de fim nÃ£o pode ser anterior Ã  data de inÃ­cio.');
         }
 
-        // Atualização válida
         $data = [
             'km_fim'     => $kmFim,
             'data_fim'   => $dataFim,
-            'finalizada' => true
+            'finalizada' => true,
         ];
 
         $viagemModel->update($id, $data);

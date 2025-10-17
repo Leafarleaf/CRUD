@@ -13,10 +13,6 @@ class Viagens extends Migration
                 'type' => 'SERIAL',
                 'auto_increment' => true
             ],
-            'motorista_cnh' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 11,
-            ],
             'veiculo_id' => [
                 'type' => 'INT',
             ],
@@ -38,6 +34,7 @@ class Viagens extends Migration
                 'type' => 'BOOLEAN',
                 'default' => false,
             ],
+            
         ]);
 
         $this->forge->addKey('id', true); // primary key
