@@ -29,36 +29,38 @@ class Veiculos extends BaseController
         $data = $this->request->getPost();
 
         $rules = [
-            'modelo'         => 'required',
-            'ano'            => 'required|integer|greater_than[1900]',
-            'data_aquisicao' => 'required|valid_date[Y-m-d]',
-            'km_aquisicao'   => 'required|integer',
-            'renavam'        => 'required',
-            'placa'          => 'required',
+            'modelo'           => 'required',
+            'ano'              => 'required|integer|greater_than[1900]',
+            'data_aquisicao'   => 'required|valid_date[Y-m-d]',
+            'km_aquisicao'     => 'required|integer',
+            'renavam'          => 'required|is_unique[veiculos.renavam]',
+            'placa'            => 'required|is_unique[veiculos.placa]',
         ];
 
         $messages = [
             'modelo' => [
-                'required' => 'Por favor, informe o modelo do veículo.',
+                'required'     => 'Por favor, informe o modelo do veículo.',
             ],
             'ano' => [
-                'required' => 'O ano do veículo é obrigatório.',
-                'integer'  => 'O ano deve ser um número inteiro.',
-                'greater_than' => 'Informe um ano válido maior que 1900.',
+                'required'     => 'O ano do veículo é obrigatório.',
+                'integer'      => 'O ano deve ser um número inteiro.',
+                'greater_than' => 'Informe um ano valido maior que 1900.',
             ],
-            'data_aquisicao' => [
-                'required' => 'Informe a data de aquisição do veículo.',
-                'valid_date' => 'Formato inválido para data. Use AAAA-MM-DD.',
+            'data_aquisicao'   => [
+                'required'     => 'Informe a data de aquisicão do veículo.',
+                'valid_date'   => 'Formato inválido para data. Use AAAA-MM-DD.',
             ],
             'km_aquisicao' => [
-                'required' => 'Informe o KM no momento da aquisição.',
-                'integer'  => 'O KM deve ser um número inteiro.',
+                'required'     => 'Informe o KM no momento da aquisição.',
+                'integer'      => 'O KM deve ser um número inteiro.',
             ],
             'renavam' => [
-                'required' => 'O campo Renavam é obrigatório.',
+                'required'     => 'O campo Renavam é obrigatório.',
+                'is_unique'    => 'Ja existe um renavam com esse número'
             ],
             'placa' => [
-                'required' => 'Informe a placa do veículo.',
+                'required'     => 'Informe a placa do veículo.',
+                'is_unique'    => 'Ja existe uma placa com esse número'
             ],
         ];
 
@@ -75,7 +77,7 @@ class Veiculos extends BaseController
 
         if ($anoAquisicao < $anoModelo) {
             return redirect()->back()->withInput()->with('errors', [
-                'data_aquisicao' => 'O ano da aquisição não pode ser anterior ao ano do modelo.'
+                'data_aquisicao' => 'O ano da aquisição nÃo pode ser anterior ao ano do modelo.'
             ]);
         }
 
