@@ -34,7 +34,6 @@ class Viagens extends Migration
                 'type' => 'BOOLEAN',
                 'default' => false,
             ],
-            
         ]);
 
         $this->forge->addKey('id', true); // primary key

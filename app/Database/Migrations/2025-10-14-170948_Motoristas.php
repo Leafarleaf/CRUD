@@ -1,4 +1,6 @@
-<?php namespace App\Database\Migrations;
+<?php
+
+namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
@@ -7,9 +9,16 @@ class CreateMotoristasTable extends Migration
     public function up()
     {
         $this->forge->addField([
+            'id' => [
+                'type'           => 'INT',
+                'unsigned'       => true,
+                'auto_increment' => true,
+                'unique'         => true,
+            ],
             'cnh' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 11,
+                'unique'     => true,
             ],
             'nome' => [
                 'type'       => 'VARCHAR',
@@ -19,7 +28,8 @@ class CreateMotoristasTable extends Migration
                 'type' => 'DATE',
             ],
         ]);
-        $this->forge->addKey('cnh', true); // primary key
+
+        $this->forge->addKey('id', true);
         $this->forge->createTable('motoristas');
     }
 
@@ -28,7 +38,3 @@ class CreateMotoristasTable extends Migration
         $this->forge->dropTable('motoristas');
     }
 }
-// * CRUD de Motoristas
-//   * Nome 
-//   * Data de nascimento - ter no minímo, 18 anos
-//   * N° da CNH.

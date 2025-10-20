@@ -33,14 +33,14 @@ class Viagens extends BaseController
         $formatarMotoristas = function ($viagemId) use ($motoristaViagemModel) {
             $motoristas = $motoristaViagemModel
                 ->distinct()
-                ->select('motoristas.nome, viagem_motoristas.motorista_cnh')
-                ->join('motoristas', 'motoristas.cnh = viagem_motoristas.motorista_cnh')
+                ->select('motoristas.nome, motoristas.cnh')
+                ->join('motoristas', 'motoristas.id = viagem_motoristas.motorista_id')
                 ->where('viagem_id', $viagemId)
                 ->findAll();
 
             $motoristasFormatados = [];
             foreach ($motoristas as $motorista) {
-                $motoristasFormatados[] = $motorista['nome'] . ' (' . $motorista['motorista_cnh'] . ')';
+                $motoristasFormatados[] = $motorista['nome'] . ' (' . $motorista['cnh'] . ')';
             }
 
             return $motoristasFormatados;
@@ -68,30 +68,34 @@ class Viagens extends BaseController
         ]);
     }
 
-
     public function store()
     {
         $viagemModel = new Viagem();
         $motoristaViagemModel = new MotoristaViagem();
+        $motoristaModel = new Motorista();
 
         $data = [
-            'veiculo_id'    => $this->request->getPost('veiculo_id'),
-            'km_inicio'     => $this->request->getPost('km_inicio'),
-            'data_inicio'   => $this->request->getPost('data_inicio'),
-            'finalizada'    => false,
+            'veiculo_id'  => $this->request->getPost('veiculo_id'),
+            'km_inicio'   => $this->request->getPost('km_inicio'),
+            'data_inicio' => $this->request->getPost('data_inicio'),
+            'finalizada'  => false,
         ];
 
         $viagemModel->insert($data);
         $viagemId = $viagemModel->getInsertID();
 
-        $motoristas = $this->request->getPost('motoristas'); // array de CNHs
+        $motoristas = $this->request->getPost('motoristas');
 
         if (is_array($motoristas)) {
             foreach ($motoristas as $cnh) {
-                $motoristaViagemModel->insert([
-                    'viagem_id' => $viagemId,
-                    'motorista_cnh' => $cnh,
-                ]);
+                $motorista = $motoristaModel->where('cnh', $cnh)->first();
+
+                if ($motorista) {
+                    $motoristaViagemModel->insert([
+                        'viagem_id'    => $viagemId,
+                        'motorista_id' => $motorista['id'],
+                    ]);
+                }
             }
         }
 
@@ -104,7 +108,7 @@ class Viagens extends BaseController
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
         }
 
         return view('viagens/finalizar', ['viagem' => $viagem]);
@@ -117,18 +121,18 @@ class Viagens extends BaseController
         $viagem = $viagemModel->find($id);
 
         if (!$viagem) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem nÃ£o encontrada");
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Viagem não encontrada");
         }
 
         $kmFim = (int) $this->request->getPost('km_fim');
         $dataFim = $this->request->getPost('data_fim');
 
         if ($kmFim < $viagem['km_inicio']) {
-            return redirect()->back()->withInput()->with('error', 'KM final nÃ£o pode ser menor que o KM inicial.');
+            return redirect()->back()->withInput()->with('error', 'KM final não pode ser menor que o KM inicial.');
         }
 
         if (strtotime($dataFim) < strtotime($viagem['data_inicio'])) {
-            return redirect()->back()->withInput()->with('error', 'Data de fim nÃ£o pode ser anterior Ã  data de inÃ­cio.');
+            return redirect()->back()->withInput()->with('error', 'Data de fim não pode ser anterior a data de início.');
         }
 
         $data = [

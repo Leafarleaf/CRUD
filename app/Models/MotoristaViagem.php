@@ -8,7 +8,7 @@ class MotoristaViagem extends Model
 {
     protected $table = 'viagem_motoristas';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['viagem_id', 'motorista_cnh'];
+    protected $allowedFields = ['viagem_id', 'motorista_id'];
 
     protected $useTimestamps = false;
 }

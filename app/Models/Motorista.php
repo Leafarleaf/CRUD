@@ -7,7 +7,8 @@ use CodeIgniter\Model;
 class Motorista extends Model
 {
     protected $table            = 'motoristas';
-    protected $primaryKey       = 'cnh';
+    protected $primaryKey       = 'id';
     protected $allowedFields    = ['cnh', 'nome', 'data_nascimento'];
-    protected $useAutoIncrement = false;
+    protected $useAutoIncrement = true;
+    protected $returnType       = 'array';
 }
